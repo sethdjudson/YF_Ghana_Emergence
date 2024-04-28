@@ -6,6 +6,7 @@ This manuscript is in under peer review. If you would like to use these data pri
 
 
 Details on the ecological niche modeling methods are available in the S1 Appendix and R markdown file: YF_Ghana_ENM
+
 Datasets:
 Ghana YF Annual Cases 1910_2022
 
