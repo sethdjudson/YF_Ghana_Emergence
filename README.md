@@ -1,4 +1,5 @@
 These files contain the data for the original article:
+
 Yellow Fever in Ghana: Predicting Emergence and Ecology from Historical Outbreaks
 
 This manuscript is in under peer review. If you would like to use these data prior to publication please reach out to Seth Judson, MD sethjudsonmd@gmail.com
