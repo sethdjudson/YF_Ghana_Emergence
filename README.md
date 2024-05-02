@@ -10,6 +10,8 @@ Details on the ecological niche modeling methods are available in the S1 Appendi
 Datasets:
 Ghana YF Annual Cases 1910_2022
 
+Ghana_YF_Occurrences
+
 Ghana_YF_Outbreaks_District_1910_2022
 
 Includes entries for outbreaks according to district
