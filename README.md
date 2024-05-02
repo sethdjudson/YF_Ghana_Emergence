@@ -5,7 +5,7 @@ Yellow Fever in Ghana: Predicting Emergence and Ecology from Historical Outbreak
 This manuscript is in under peer review. If you would like to use these data prior to publication please reach out to Seth Judson, MD sethjudsonmd@gmail.com
 
 
-Details on the ecological niche modeling methods are available in the S1 Appendix and R markdown file: YF_Ghana_ENM
+Details on the ecological niche modeling methods are available in the S1 Appendix and R markdown file: Ghana_YF_ENM
 
 Datasets:
 Ghana YF Annual Cases 1910_2022
