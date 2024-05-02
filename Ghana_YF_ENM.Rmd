@@ -1,0 +1,144 @@
+---
+title: "Ghana_YF_ENM"
+output: html_document
+date: "2024-05-02"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ENMeval)
+library(raster)
+library(dplyr)
+```
+
+```{r}
+library(sf)
+library(ggplot2)
+```
+
+```{r}
+library(ecospat)
+```
+
+
+```{r}
+folder_path <- "variables_asc"
+envs.files <- list.files(path = folder_path, pattern = "*.asc", full.names = TRUE)
+envs <- raster::stack(envs.files) #load raster stack of covariates
+```
+
+```{r}
+occs_all <- read.csv("occ_all.csv") #read in occurences (all, urban, and savanna)
+occs_sv <- read.csv("occ_savanna.csv")
+occs_u <- read.csv("occ_urban.csv")
+```
+
+```{r}
+occs.sf <- sf::st_as_sf(occs_all, coords = c("long","lat"), crs = raster::crs(envs)) #make occurrences an sf object
+```
+
+```{r}
+plot(envs[[1]], main = names(envs)[1]) #plotting bio1 (annual temperature) 
+plot(occs.sf, add = TRUE) # adding occurrences
+```
+```{r}
+# Randomly sample 10,000 background points from one background extent raster 
+# (only one per cell without replacement). 
+bg <- dismo::randomPoints(envs[[1]], n = 10000) %>% as.data.frame()
+colnames(bg) <- colnames(occs_all)
+```
+```{r}
+
+plot(envs[[1]])
+points(bg, pch = 20, cex = 0.2)
+```
+
+#Model containing all occurrences
+```{r}
+m_all <- ENMevaluate(occs = occs_all, envs = envs, bg = bg, 
+                      algorithm = 'maxnet', partitions = "jackknife", 
+                      tune.args = list(fc = c("L", "Q", "LQ"), rm = 1:5))
+```
+```{r}
+m_all
+```
+```{r}
+# Overall results
+m_all.res<-eval.results(m_all)
+m_all.res
+```
+
+```{r}
+#select models with the lowest average test omission rate, and to break ties, with the highest average validation AUC (Radosavljevic & Anderson 2014, Kass et al. 2020)
+opt.seq_all <- m_all.res %>% 
+  filter(or.10p.avg == min(or.10p.avg)) %>% 
+  filter(auc.val.avg == max(auc.val.avg))
+opt.seq_all #optimal model parameters fc.Qrm.2
+```
+```{r}
+#select model with lowest AICc, delta.AICc is the difference between the AICc of a given model and the AICc of the model with the lowest AICc
+opt.aicc_all <- m_all.res %>% filter(delta.AICc == 0)
+opt.aicc_all 
+```
+
+```{r} 
+mod.seq_all <- eval.models(m_all)[[opt.seq_all$tune.args]] #select optimal model
+
+mod.seq_all$betas ## non-zero coefficients in model
+plot(mod.seq_all, type = "cloglog")
+```
+
+```{r}
+pred.seq_all <- eval.predictions(m_all)[[opt.seq_all$tune.args]] #prediction based on selected optimal model above
+plot(pred.seq_all)
+points(eval.occs(m_all), pch = 21, bg = eval.occs.grp(m_all))
+```
+
+#Savanna models
+```{r}
+m_sv <- ENMevaluate(occs = occs_sv, envs = envs, bg = bg, 
+                      algorithm = 'maxnet', partitions = "jackknife", 
+                      tune.args = list(fc = c("L", "Q", "LQ"), rm = 1:5))
+```
+
+```{r}
+m_sv
+```
+```{r}
+# Overall results
+m_sv.res<-eval.results(m_sv)
+m_sv.res
+```
+
+```{r}
+#select model with lowest AICc, delta.AICc is the difference between the AICc of a given model and the AICc of the model with the lowest AICc
+opt.aicc_sv <- m_sv.res %>% filter(delta.AICc == 0)
+opt.aicc_sv
+```
+
+```{r}
+#select models with the lowest average test omission rate, and to break ties, with the highest average validation AUC (Radosavljevic & Anderson 2014, Kass et al. 2020)
+opt.seq_sv <- m_sv.res %>% 
+  filter(or.10p.avg == min(or.10p.avg)) %>% 
+  filter(auc.val.avg == max(auc.val.avg))
+opt.seq_sv
+
+```
+
+
+```{r}
+mod.seq_sv <- eval.models(m_sv)[[opt.seq_sv$tune.args]] #select optimal model
+
+mod.seq_sv$betas ## non-zero coefficients in model
+plot(mod.seq_sv, type = "cloglog")
+```
+
+```{r}
+pred.seq_sv <- eval.predictions(m_sv)[[opt.seq_sv$tune.args]]
+plot(pred.seq_sv)
+points(eval.occs(m_sv), pch = 21, bg = eval.occs.grp(m_sv))
+```
+
