@@ -1,0 +1,24 @@
+﻿species,lat,long,location,coord.ref,cycle,year,ref
+YF,8.66,-1.53,Kadelso,Kadelso,sylvatic,1955,Boorman 1957
+YF,8.15,-1.51,Kunso,Kunso,sylvatic,1955,Boorman 1957
+YF,8.06,-1.73,Kintampo,Kintampo,sylvatic,1955,Boorman 1957
+YF,9.69,-0.83,Pong-tamale,Pong-tamale,savanna,1969,Beausoleil 1971; Addy 1986
+YF,10.8,-0.86,Bolgatanga,Bolgatanga hospital,urban,1969,Beausoleil 1971; Addy 1986
+YF,5.91,-0.89,Akyem Manso,Akyem Manso,urban,1970,Addy 1986
+YF,5.78,-0.56,Asikasu,Asikasu,urban,1970,Addy 1986
+YF,6.04,-0.81,Akwatia,Akwatia,urban,1970,Addy 1986
+YF,10.54,-2.7,Jirapa,Jirapa,urban,1977,Agadzie 1984
+YF,6.2,-0.42,Maase,Maase,urban,1977,Agadzie 1984
+YF,6.99,0.298,Kpando,Kpando,urban,1978,Agadzie 1984
+YF,7.15,0.477,Hohoe,Hohoe,urban,1978,Agadzie 1984
+YF,9.089,-1.82,Damongo,Damongo,savanna,1983,Addy 1986; WER5943
+YF,11.06,-0.23,Bawku,Bawku Hosptial,urban,1996,WER7346
+YF,9.19,-1.52,Bidima,Bidima,savanna,2021,Inusah 2023
+YF,9.15,-1.39,Kojope,Kojope,savanna,2021,Inusah 2023
+YF,9.16,-1.51,Busunu,Busunu,savanna,2021,Inusah 2023
+YF,9.13,-1.58,Kukunde,Kukunde,savanna,2021,Inusah 2023
+YF,9.12,-1.64,Jonokponto,Mempeasem,savanna,2021,Inusah 2023
+YF,9.12,-1.66,Achubunyor,Jonokponto,savanna,2021,Inusah 2023
+YF,9.13,-1.84,Nabori,Achubunyor CHPS,savanna,2021,Inusah 2023
+YF,9.08,-1.82,Attributo,Yipala CHPS (LN),savanna,2021,Inusah 2023
+YF,8.58,-2.22,Tinga,Nabori,savanna,2021,Promed
