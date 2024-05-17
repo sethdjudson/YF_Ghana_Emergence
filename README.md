@@ -20,7 +20,7 @@ Ghana_YF_Outbreaks_District_1910_2022
 
 -Includes data for outbreaks according to district
 
-Data fields
+#Data fields
 
 Year= year cases occurred at that location
 
