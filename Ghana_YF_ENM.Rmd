@@ -8,6 +8,10 @@ date: "2024-05-02"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+The following R markdown file contains the R scripts used in the supplementary ENM analysis for the study: Yellow Fever in Ghana: Predicting Emergence and Ecology from Historical Outbreaks by Judson et al. 2024
+
+The framework for tuning and evaluating the models was informed by the ENMEval R package and ENMEval 2.0 vignette by Kass et al. 2023 (https://jamiemkass.github.io/ENMeval/articles/ENMeval-2.0-vignette.html)
+
 ```{r}
 library(ENMeval)
 library(raster)
@@ -23,27 +27,35 @@ library(ggplot2)
 library(ecospat)
 ```
 
-
 ```{r}
-folder_path <- "variables_asc"
+set.seed(15) #set random seed in order to reproduce this analysis
+```
+
+Load covariates and occurrence data
+```{r}
+folder_path <- "variables_asc" 
 envs.files <- list.files(path = folder_path, pattern = "*.asc", full.names = TRUE)
 envs <- raster::stack(envs.files) #load raster stack of covariates
 ```
 
 ```{r}
-occs_all <- read.csv("occ_all.csv") #read in occurences (all, urban, and savanna)
+occs_all <- read.csv("occ_all.csv") #read in occurrences (all, urban, and savanna)
 occs_sv <- read.csv("occ_savanna.csv")
 occs_u <- read.csv("occ_urban.csv")
 ```
 
+
+Mapping covariates and occurrences for demonstration purposes
 ```{r}
 occs.sf <- sf::st_as_sf(occs_all, coords = c("long","lat"), crs = raster::crs(envs)) #make occurrences an sf object
 ```
 
 ```{r}
-plot(envs[[1]], main = names(envs)[1]) #plotting bio1 (annual temperature) 
+plot(envs[[1]], main = names(envs)[1]) #plotting bio1 (annual temperature) as an example 
 plot(occs.sf, add = TRUE) # adding occurrences
 ```
+
+Create background sampling points
 ```{r}
 # Randomly sample 10,000 background points from one background extent raster 
 # (only one per cell without replacement). 
@@ -53,14 +65,18 @@ colnames(bg) <- colnames(occs_all)
 ```{r}
 
 plot(envs[[1]])
-points(bg, pch = 20, cex = 0.2)
+points(bg, pch = 20, cex = 0.2) #plotting background points
 ```
 
-#Model containing all occurrences
+#Model containing all YF occurrences
 ```{r}
 m_all <- ENMevaluate(occs = occs_all, envs = envs, bg = bg, 
                       algorithm = 'maxnet', partitions = "jackknife", 
-                      tune.args = list(fc = c("L", "Q", "LQ"), rm = 1:5))
+                      tune.args = list(fc = c("L", "Q", "LQ"), rm = 1:5)) 
+#K-1 leave-one-out cross validation method
+#feature classes (fc) : linear, quadratic, linear * quadratic (interaction)
+#regularization multipliers (rm): 1-5  (see Merow 2013 for discussion on fc and rm settings)
+#note the pop density raster has additional cells that are NA in the other layers, so these are converted to NA in the pop density raster
 ```
 ```{r}
 m_all
@@ -76,7 +92,8 @@ m_all.res
 opt.seq_all <- m_all.res %>% 
   filter(or.10p.avg == min(or.10p.avg)) %>% 
   filter(auc.val.avg == max(auc.val.avg))
-opt.seq_all #optimal model parameters fc.Qrm.2
+opt.seq_all #optimal model parameters fc.Q_rm.2 (auc.val.avg=0.73, or.10p.avg=0.13, delta.AICc =1.18)
+#delta.AICc of <2 indicates statistically similar to others with the lowest AICc
 ```
 ```{r}
 #select model with lowest AICc, delta.AICc is the difference between the AICc of a given model and the AICc of the model with the lowest AICc
@@ -87,8 +104,8 @@ opt.aicc_all
 ```{r} 
 mod.seq_all <- eval.models(m_all)[[opt.seq_all$tune.args]] #select optimal model
 
-mod.seq_all$betas ## non-zero coefficients in model
-plot(mod.seq_all, type = "cloglog")
+mod.seq_all$betas # non-zero coefficients in model
+plot(mod.seq_all, type = "cloglog") #plot response curves
 ```
 
 ```{r}
@@ -96,6 +113,11 @@ pred.seq_all <- eval.predictions(m_all)[[opt.seq_all$tune.args]] #prediction bas
 plot(pred.seq_all)
 points(eval.occs(m_all), pch = 21, bg = eval.occs.grp(m_all))
 ```
+
+```{r}
+writeRaster(pred.seq_all, filename = "YF_all.tif", format = "GTiff", overwrite=TRUE) #save prediction as raster TIFF
+```
+
 
 #Savanna models
 ```{r}
@@ -127,10 +149,14 @@ opt.seq_sv <- m_sv.res %>%
 opt.seq_sv
 
 ```
-
+```{r} 
+comp.seq_sv <- m_sv.res%>%
+  filter(tune.args=='fc.Q_rm.2')
+comp.seq_sv #select model with same feature classes and regularization multipliers as the model with all occurrences 
+```
 
 ```{r}
-mod.seq_sv <- eval.models(m_sv)[[opt.seq_sv$tune.args]] #select optimal model
+mod.seq_sv <- eval.models(m_sv)[[opt.seq_sv$tune.args]] #using optimal model based on omission rate 
 
 mod.seq_sv$betas ## non-zero coefficients in model
 plot(mod.seq_sv, type = "cloglog")
@@ -140,5 +166,9 @@ plot(mod.seq_sv, type = "cloglog")
 pred.seq_sv <- eval.predictions(m_sv)[[opt.seq_sv$tune.args]]
 plot(pred.seq_sv)
 points(eval.occs(m_sv), pch = 21, bg = eval.occs.grp(m_sv))
+```
+
+```{r}
+writeRaster(pred.seq_sv, filename = "YF_sv.tif", format = "GTiff", overwrite=TRUE)
 ```
 
