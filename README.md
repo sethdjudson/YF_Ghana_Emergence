@@ -1,8 +1,6 @@
 These files contain the data for the original article:
 
-**Yellow Fever in Ghana: Predicting Emergence and Ecology from Historical Outbreaks**
-
-This manuscript is in under peer review. If you would like to use these data prior to publication please reach out to Seth Judson, MD sethjudsonmd@gmail.com
+Judson SD, Kenu E, Fuller T, Asiedu-Bekoe F, Biritwum-Nyarko A, Schroeder LF, Dowdy DW. Yellow fever in Ghana: Predicting emergence and ecology from historical outbreaks. PLOS Global Public Health. 2024; doi.org/10.1371/journal.pgph.0003337
 
 
 Details on the ecological niche modeling methods are available in the S1 Appendix and R markdown file: Ghana_YF_ENM
